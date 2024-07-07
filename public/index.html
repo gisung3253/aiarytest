@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>aiary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 80%;
+            font-size: 16px;
+        }
+        img {
+            max-width: 50%; /* 이미지 크기를 줄이기 */
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>aiary</h1>
+        <input type="text" id="description" placeholder="입력">
+        <button onclick="generateContent()">버튼</button>
+        <div id="result">
+            <img id="generatedImage" src="" alt="Generated Image" style="display:none;">
+            <p id="generatedText"></p>
+        </div>
+    </div>
+
+    <script>
+        async function generateContent() {
+            const description = document.getElementById('description').value;
+            console.log('Description:', description); // 디버깅용 콘솔 출력
+            const response = await fetch('/generate-content', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ description: description })
+            });
+            const data = await response.json();
+            const resultDiv = document.getElementById('result');
+            const imageElement = document.getElementById('generatedImage');
+            const textElement = document.getElementById('generatedText');
+
+            if (data.image_url) {
+                imageElement.src = data.image_url;
+                imageElement.style.display = 'block';
+            } else {
+                imageElement.style.display = 'none';
+            }
+
+            if (data.story_text) {
+                textElement.innerText = data.story_text;
+            } else {
+                textElement.innerText = `Error: ${data.error}`;
+            }
+        }
+    </script>
+</body>
+</html>
